@@ -187,16 +187,34 @@ This section lists the capabilities that we have identified as useful for our ke
 This applies to both within the same domain or across domains. Detecting a same device returning would traditionally happen through storing IDs persistently in the browser and reusing them when a device is seen again. The lifespan of detection needs to be at a minimum 7 days.
 
 ##### Use cases
-Account Creation: Seeing an identity being used with a device it has never been seen with before (or that's very different from the devices it has been seen with before) can indicate identity theft where a fraudster uses a known identity to open new accounts.
-Account Takeover: An account that is taken over will be accessed from a new device, i.e. a device it hasn’t been used with before. This can be treated as an additional risk compared to devices that have been regularly seen with said account. The lifespan during which a device can be recognized as ‘seen again’ is very relevant here, as shorter windows will make every account access look as if it came from a never-before-seen device.
+Account Creation: Seeing an identity being used with a device it has never been seen with before (or that's very different from the devices it has been seen with before) can indicate identity theft where a fraudster uses a known identity to open new accounts.  
+Account Takeover: An account that is taken over will be accessed from a new device, i.e. a device it hasn’t been used with before. This can be treated as an additional risk compared to devices that have been regularly seen with said account. The lifespan during which a device can be recognized as ‘seen again’ is very relevant here, as shorter windows will make every account access look as if it came from a never-before-seen device.  
 1st Party Fraud: A person committing 1st party fraud and then claiming to be a victim of identity theft can in some cases be detected by recognizing that their own device was used to commit said fraud.
 
 ####  Recognize whether the same device is seen again in the context of multiple identities
 Similar to the above, but recognizing the usage of the same device with different identities
 
 ##### Use cases
-Account Creation: Fraudsters often steal multiple identities. Seeing many different identities’ data coming from the same device is a high risk signal, since legitimate users mostly use a single identity with their device.
-Account Takeover: A similar point to the above holds for account takeover when e.g. a fraudster is using a list of leaked usernames and passwords to takeover multiple victims' accounts. Recognizing that these logins into multiple accounts are happening from the same device can be used to indicate high risk.
+Account Creation: Fraudsters often steal multiple identities. Seeing many different identities’ data coming from the same device is a high risk signal, since legitimate users mostly use a single identity with their device.  
+Account Takeover: A similar point to the above holds for account takeover when e.g. a fraudster is using a list of leaked usernames and passwords to takeover multiple victims' accounts. Recognizing that these logins into multiple accounts are happening from the same device can be used to indicate high risk.  
+
+#### Enforce rate limiting against a scarce client resource
+Limits the number of times an action can be taken by an anonymous client.
+
+##### Use cases
+Account Creation: Limit the number of accounts that can be created.  
+Credential Stuffing: Limit the number of distinct accounts that can attempt sign in.  
+IVT: Cap the number of clicks or conversions to some maximum per X per day.  
+Sensitive data scraping: Limit accesses to aggregable information.  
+Online spam & fake engagements: Frustrate manipulation of lightweight interactions (e.g. video views) by capping contributions.  
+Denial of Service: Rate limit particularly expensive operations.  
+
+#### Deterministically block abusive clients
+Ensure that a particular client is no longer able to reach your services.
+
+##### Use cases
+Account Creation: Frustrate repeat offenders and harden against account ban evasion.  
+Denial of Service (and others): Block signed-out clients that are abusing services.
 
 #### Retrieve a device’s IP address
 Knowledge of the IP address offers many benefits in the fight against identity fraud:
@@ -211,8 +229,7 @@ VPN/TOR detection: Many cases of fraud are committed from devices on VPNs. This 
 Many use cases are currently addressed by treating IP as a relatively unique identifier: Similar to the use cases above. For example: 
 Account Creation: seeing unusual numbers of account creations from the same IP or IP range indicates risk; 
 ###### Distinguish client endpoints for risk based authentication / resource binding
-Account Takeover: seeing an identity with an IP address that it has never been associated with. These are ways in which knowledge of the IP address can contribute to risk insights.
-
+Account Takeover: seeing an identity with an IP address that it has never been associated with. These are ways in which knowledge of the IP address can contribute to risk insights.  
 IP block nature: If certain IPs within a block have been associated with fraud, the overarching block can be preemptively labeled as more risky.
 Approximate location information: IP addresses are associated with geolocation information. During account creation if an IPs geolocation is far removed from the submitted address this indicates higher risk of fraud.
 
@@ -227,12 +244,9 @@ Determine instances where the user's actual location is not aligned with the sta
 Determine instances where the page being visited claims to be another, so as to manipulate ad prices.
 
 ##### Use cases
-Account Creation: Similar to how IP geolocation helps, discrepancies between device geolocation and a submitted address increase fraud risk.
-
-Account Takeover: When an account is taken over it generally happens from a different location than where the victim usually has been using their account. Also, impossibly fast jumps in geolocation between two logins for an identity are indicators of account takeover. (I.e. a person logging in from New York and 5 minutes later from San Francisco is not physically possible)
-
-1st Party Fraud: A person committing first-party fraud can change their IP address but still be in the same physical location. Detecting fraud being committed from the same location is an indicator of 1st party Fraud.
-
+Account Creation: Similar to how IP geolocation helps, discrepancies between device geolocation and a submitted address increase fraud risk.  
+Account Takeover: When an account is taken over it generally happens from a different location than where the victim usually has been using their account. Also, impossibly fast jumps in geolocation between two logins for an identity are indicators of account takeover. (I.e. a person logging in from New York and 5 minutes later from San Francisco is not physically possible). 
+1st Party Fraud: A person committing first-party fraud can change their IP address but still be in the same physical location. Detecting fraud being committed from the same location is an indicator of 1st party Fraud.  
 Ad Fraud: Alterations to the apparent location of a user can distort publisher metrics related to CPC and CPM.
 
 #### True traffic origin and destination
@@ -243,23 +257,21 @@ This includes detecting the device’s type and whether or not it is running in 
 
 ##### Knowledge of the device types used improves accuracy of fraud detection:
 
-Detecting the device types used by a fraud ring improves accuracy when filtering e.g. an IP block, in order to avoid blocking good users who are not in the fraud ring.
+Detecting the device types used by a fraud ring improves accuracy when filtering e.g. an IP block, in order to avoid blocking good users who are not in the fraud ring.  
 Detecting the device types or brands used by a good identity informs risk when unexpected device types or brands are used for that identity. (e.g. traditional Chromebook user switching to a Macbook)
 
 #### Know that a human user is interacting with the device
 This comes down to having the capabilities required to detect bots/headless browsers/scripts. Invalid traffic defenses should be able to determine the realness and human qualities of ad interactions, for example:
 
--Real and authentic mouse/keyboard/touchscreen inputs
--"Non-human" low latency of reaction time
--"Non-human" low or artificially high variability in time between actions/user-events
--Authenticity of device, environment, and event are critical inputs to effective assessment of authentic interactions.
+-Real and authentic mouse/keyboard/touchscreen inputs. 
+-"Non-human" low latency of reaction time. 
+-"Non-human" low or artificially high variability in time between actions/user-events. 
+-Authenticity of device, environment, and event are critical inputs to effective assessment of authentic interactions.  
 
 ##### Use Cases
-Account Creation: Fraudulent account creation is often automated and can employ bots. Identifying an automated user from a human user is a powerful risk indicator.
-
-Account Takeover: A large-scale account takeover attack can be automated. Also, account takeover can be bootstrapped through a set of logins and snooping before stealing funds. This process of logins and snooping can also be automated.
-
-Ad Fraud Detection
+Account Creation: Fraudulent account creation is often automated and can employ bots. Identifying an automated user from a human user is a powerful risk indicator.  
+Account Takeover: A large-scale account takeover attack can be automated. Also, account takeover can be bootstrapped through a set of logins and snooping before stealing funds. This process of logins and snooping can also be automated.  
+Ad Fraud Detection. 
 
 #### Coordinated Attack Detection
 
